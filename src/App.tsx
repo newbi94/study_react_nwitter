@@ -4,8 +4,11 @@ import Home from "./routes/home";
 import Profile from "./routes/profile";
 import Login from "./routes/login";
 import CreateAccount from "./routes/create-account";
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle, styled } from "styled-components";
 import reset from "styled-reset";
+import { useEffect, useState } from "react";
+import LoadingScreen from "./components/loading-screen";
+import { auth } from "./firebase";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +25,7 @@ const router = createBrowserRouter([
       },
     ],
     //children [ ~~  ] 내부에 있는 각 element들은 path가 "/"인 <layout />과 함께 랜더링된다.
+    //그 위치가 layout.tsx 안에 <Outlet />위치이다.
   },
   {
     path: "/login",
@@ -33,6 +37,7 @@ const router = createBrowserRouter([
   },
 ]);
 //<Login />과 <CreateAccount />는 children 범위 밖이므로 독립적으로 랜더링된다.
+
 const GlobalStyles = createGlobalStyle`
   ${reset};
   * {
@@ -45,13 +50,33 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
+const Wrapper = styled.div`
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+`;
+
 function App() {
+  const [isLoading, setLoading] = useState(true);
+  
+  const init = async () => {
+    await auth.authStateReady();
+    setLoading(false);
+  };//authStateReady -> firebase가 쿠기와 토큰을 읽고 백엔드와 소통해서
+  // 로그인 여부를 확인하는 동안 기다린다.
+  
+  useEffect(() => {
+    init();
+  }, []);
+  
   return (
-    <>
+    <Wrapper>
       <GlobalStyles />
-      <RouterProvider router={router} />
-    </>
-  );
-}
+      {isLoading ? <LoadingScreen /> :
+      <RouterProvider router={router} />}
+    </Wrapper>
+  );//<GlobalStyles />를 적용해 전역에 스타일을 동일하게 맞출 수 있다.
+  //일일히 각 컴포넌트에 스타일을 기재하지 않아도 된다.
+};
 
 export default App;
