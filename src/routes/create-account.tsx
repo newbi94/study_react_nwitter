@@ -1,5 +1,8 @@
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { styled } from "styled-components";
+import { auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -43,6 +46,8 @@ const Error = styled.span`
 
 export default function CreateAccount() {
   
+  const navigate = useNavigate();
+
   const [isLoading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -63,14 +68,25 @@ export default function CreateAccount() {
     }
   };
   
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isLoading || name === "" || email === "" || password === "") return;
+    //로딩중이거나, 이름,이메일,비밀번호중 하나라도 작성하지 않으면 즉시 함수 종료.
     try {
-      // create an account
-      // set the name of the user.
-      // redirect to the home page
+      setLoading(true);
+      //작성완료시 로딩상태로 바뀌어 submit버튼도 loading...으로 바뀐다.
+      const credentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );//user의 정보를 저장하고 로그인시켜주는 단계
+      console.log(credentials.user);
+      await updateProfile(credentials.user, {
+        displayName: name,
+      });//이름도 입력값으로 받았으니 displayName에 이름을 부여해준다
+      navigate("/");//다시 홈화면으로 보내주는 코드
     } catch (e) {
-      // setError
+      // user생성이 되지 않았을경우 실행될 구문을 입력하는 위치
     } finally {
       setLoading(false);
     }
@@ -78,7 +94,7 @@ export default function CreateAccount() {
   
   return (
     <Wrapper>
-      <Title>Log into 𝕏</Title>
+      <Title>Join 𝕏</Title>
       <Form onSubmit={onSubmit}>
         <Input
           onChange={onChange}

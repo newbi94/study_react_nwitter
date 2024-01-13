@@ -9,11 +9,17 @@ import reset from "styled-reset";
 import { useEffect, useState } from "react";
 import LoadingScreen from "./components/loading-screen";
 import { auth } from "./firebase";
+import ProtectedRoute from "./components/protected-route";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),//<Layout />을 감싸주면 아래 chlidren으로 있는 <Home />, <Profile /> 모두 <ProtectedRoute> 안에 있게된다.
+
     children: [
       {
         path: "",
