@@ -1,48 +1,17 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
-import { styled } from "styled-components";
 import { auth } from "../firebase";
-import { useNavigate } from "react-router-dom";
-
-const Wrapper = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 420px;
-  padding: 50px 0px;
-`;
-
-const Title = styled.h1`
-  font-size: 42px;
-`;
-
-const Form = styled.form`
-  margin-top: 50px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-`;
-
-const Input = styled.input`
-  padding: 10px 20px;
-  border-radius: 50px;
-  border: none;
-  width: 100%;
-  font-size: 16px;
-  &[type="submit"] {
-    cursor: pointer;
-    &:hover {
-      opacity: 0.8;
-    }
-  }
-`;
-
-const Error = styled.span`
-  font-weight: 600;
-  color: tomato;
-`;
+import { Link, useNavigate } from "react-router-dom";
+import { FirebaseError } from "firebase/app";
+import {
+  Form,
+  Error,
+  Input,
+  Switcher,
+  Title,
+  Wrapper,
+} from "../components/auth-components";
+import GithubButton from "../components/github-btn";
 
 export default function CreateAccount() {
   
@@ -70,6 +39,7 @@ export default function CreateAccount() {
   
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
     if (isLoading || name === "" || email === "" || password === "") return;
     //로딩중이거나, 이름,이메일,비밀번호중 하나라도 작성하지 않으면 즉시 함수 종료.
     try {
@@ -86,6 +56,9 @@ export default function CreateAccount() {
       });//이름도 입력값으로 받았으니 displayName에 이름을 부여해준다
       navigate("/");//다시 홈화면으로 보내주는 코드
     } catch (e) {
+      if (e instanceof FirebaseError) {
+        setError(e.message);
+      };// " e instanceof FirebaseError " 도움말 참조할 것 암튼 firebase의 에러종류일시, 라는 의미인듯
       // user생성이 되지 않았을경우 실행될 구문을 입력하는 위치
     } finally {
       setLoading(false);
@@ -126,6 +99,10 @@ export default function CreateAccount() {
         />
       </Form>
       {error !== "" ? <Error>{error}</Error> : null}
+      <Switcher>
+        Already have an account? <Link to="/login">Log in &rarr;</Link>
+      </Switcher>
+      <GithubButton />
     </Wrapper>
   );
-  }
+  }  //  " &rarr; " -> 오른쪽화살표 
