@@ -10,7 +10,7 @@ export default function ProtectedRoute({
   //currentUser 는 User || null 을 결과값으로 주는 로그인 여부 확인 코드이다.
   if (user === null) {
     return <Navigate to="/login" />;
-  }//로그인 상태가 아닐시 로그인 페이지로 되돌려 보내는 코드.
+  }//로그인 상태가 아닐시 로그인 페이지로 되돌려 보내는 코드. layout,home,profile화면으로의 접근이 막힌다.
   return children;
 };//로그인 상태라면 <ProtectedRoute>로 감싼 컴포넌트인 <Layout />가 렌더링 될거고
 //당연히 그 children 컴포넌트인 home과 profile중에 home이 기본으로 렌더링된다.

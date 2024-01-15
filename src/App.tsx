@@ -68,8 +68,8 @@ function App() {
   const init = async () => {
     await auth.authStateReady();
     setLoading(false);
-  };//authStateReady -> firebase가 쿠기와 토큰을 읽고 백엔드와 소통해서
-  // 로그인 여부를 확인하는 동안 기다린다.
+  };//최초 main.tsx에서 App 렌더시 authStateReady -> firebase가 쿠기와 토큰을 읽고 백엔드와 소통해서
+  // 로그인 여부를 확인하는 동안 기다린다. 
   
   useEffect(() => {
     init();

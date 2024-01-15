@@ -24,16 +24,22 @@ const Logo = styled.img`
 `;
 
 export default function GithubButton() {
+  
   const navigate = useNavigate();
+  
   const onClick = async () => {
     try {
       const provider = new GithubAuthProvider();
+      //GithubAuthProvider -> from cordova(x)  just firebase  
+      
       await signInWithPopup(auth, provider);
       navigate("/");
+    
     } catch (error) {
       console.error(error);
     }
   };
+  
   return (
     <Button onClick={onClick}>
       <Logo src="/github-logo.svg" />
