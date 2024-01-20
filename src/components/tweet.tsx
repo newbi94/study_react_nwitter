@@ -170,16 +170,12 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
       //여기서 db는 firebase.ts 에서 가져온 firestore다.
       if(editText){
         //edit버튼을 누르고 글을 지우거나 추가하거나 하는 onChange이벤트가 발생하면 editText값도 바뀌므로 실행된다.
-      await updateDoc(tweetRef, {
-        tweet: editText,
-      });//바뀐 editText로 tweetRef에 있는 tweet값을 수정한다. 따라서 글 내용도 바뀐다.
+      await updateDoc(tweetRef, {tweet: editText});
+      //바뀐 editText로 tweetRef에 있는 tweet값을 수정한다. 따라서 글 내용도 바뀐다.
     }
-      
-      if (editFile) {
+       if (editFile) {
         //edit버튼을 누르고 change photo버튼을 눌러 사진을 선택해서 editFile에 file이 담기면 실행된다.
-      const photoRef = ref(
-        storage,
-        `tweets/${user.uid}}/${id}`)
+      const photoRef = ref(storage,`tweets/${user.uid}/${id}`)
         //photoRef는 storage내부에 tweets콜렉션 안에 user.uid로 된 doc에 id로 된 이미지파일을 뜻한다
         //db와 비슷하게 storage는 firebase.ts에서 가져온 storage다.
         await deleteObject(photoRef)
@@ -190,9 +186,8 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
         //id가 겹칠 일이 없다.
       const url = await getDownloadURL(result.ref);
       //방금 새로 올린 이미지파일의 URL주소를 url에 담고
-      await updateDoc(tweetRef, {
-        photo: url,
-      });//doc (X) tweetRef (o)
+      await updateDoc(tweetRef, {photo: url});
+      //doc (X) tweetRef (o)
       //db안에 해당 트윗의 doc안에 photo: url 항목을 추가한다.
 
       //tweetRef 는 db속 주소, photoRef는 storage속 주소로써 서로 다른 것이다.

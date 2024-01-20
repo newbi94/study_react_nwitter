@@ -30,7 +30,7 @@ const Wrapper = styled.div`
 
 export default function Timeline() {
   const [tweets, setTweet] = useState<ITweet[]>([]);
-  
+  //배열로 호출되는 interface를 갖게될 것.
   let unsubscribe: Unsubscribe | null = null;
   const fetchTweets = async () => {
     const tweetsQuery = query(
@@ -59,6 +59,7 @@ export default function Timeline() {
       setTweet(tweets);
     });
   };
+  
   //하단의 방식은 문서를 한번만 가져오고 상단의 방식은 쿼리에 리스너를 추가하여
     //실시간으로 편집,삭제,추가 등의 변화를 감지하여 setTweet에 적용시켜준다.
 
