@@ -58,7 +58,7 @@ export default function CreateAccount() {
     } catch (e) {
       if (e instanceof FirebaseError) {
         setError(e.message);
-      };// " e instanceof FirebaseError " 도움말 참조할 것 암튼 firebase의 에러종류일시, 라는 의미인듯
+      }// " e instanceof FirebaseError " 도움말 참조할 것 암튼 firebase의 에러종류일시, 라는 의미인듯
       // user생성이 되지 않았을경우 실행될 구문을 입력하는 위치
     } finally {
       setLoading(false);

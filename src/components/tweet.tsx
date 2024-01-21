@@ -84,7 +84,7 @@ const EditButton = styled.button`
   cursor: pointer;
 `;
 
-const SubmitButton = styled.button`
+const SubmitBtn = styled.input`
   background-color: white;
   color: black;
   font-weight: 600;
@@ -110,6 +110,12 @@ const AttachFileButton = styled.label`
 
 const AttachFileInput = styled.input`
   display: none;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 `;
 
 export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
@@ -155,7 +161,7 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
   };
 
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const user = auth.currentUser;
     if (!user || isLoading || editText.length > 180)
@@ -230,7 +236,7 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
         {user?.uid === userId&&!edit ? ( 
           <EditButton onClick={onEdit}>Edit</EditButton>
         ) : userId&&edit? ( 
-        <div>
+        <Form onSubmit={onSubmit}>
           <AttachFileButton htmlFor="editFile">
         {editFile ? "Photo Changed✅" : "Change Photo"}
       </AttachFileButton>
@@ -240,8 +246,11 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
         id="editFile"
         accept="image/*"
       />
-        <SubmitButton onClick={onSubmit}>Ok</SubmitButton>
-        </div> ) : null}
+        <SubmitBtn
+        type="submit"
+        value={isLoading ? "Posting..." : "Done"}
+      />
+        </Form> ) : null}
       </Column>
       <Column>{photo ? <Photo src={photo} /> : null}</Column>
     </Wrapper>

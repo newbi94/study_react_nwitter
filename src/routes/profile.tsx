@@ -113,7 +113,7 @@ export default function Profile() {
     fetchTweets();
   }, []);
   //timeline.tsx에서 사용했던 방식과 같은 방식이지만 onSnapshot 메소드로 realtime 방식은 사용하지 않는다.
-  
+
   return (
     <Wrapper>
       <AvatarUpload htmlFor="avatar">
@@ -137,6 +137,7 @@ export default function Profile() {
         accept="image/*"
       />
       <Name>{user?.displayName ?? "Anonymous"}</Name>
+      
       <Tweets>
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} {...tweet} />

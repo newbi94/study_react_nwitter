@@ -50,7 +50,7 @@ export default function Login() {
   };
   return (
     <Wrapper>
-      <Title>Log into 𝕏</Title>
+      <Title>Billy kimber's Cave</Title>
       <Form onSubmit={onSubmit}>
         <Input
           onChange={onChange}
