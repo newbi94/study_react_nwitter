@@ -83,6 +83,6 @@ function App() {
     </Wrapper>
   );//<GlobalStyles />를 적용해 전역에 스타일을 동일하게 맞출 수 있다.
   //일일히 각 컴포넌트에 스타일을 기재하지 않아도 된다.
-};
+}
 
 export default App;

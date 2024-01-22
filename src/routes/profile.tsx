@@ -1,7 +1,7 @@
 import { styled } from "styled-components";
 import { auth, db, storage } from "../firebase";
 import { useEffect, useState } from "react";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes,} from "firebase/storage";
 import { updateProfile } from "firebase/auth";
 import {
   collection,
@@ -10,9 +10,12 @@ import {
   orderBy,
   query,
   where,
+  doc,
+  updateDoc,
 } from "firebase/firestore";
 import { ITweet } from "../components/timeline";
 import Tweet from "../components/tweet";
+
 
 const Wrapper = styled.div`
   display: flex;
@@ -51,13 +54,71 @@ const Tweets = styled.div`
   flex-direction: column;
   gap: 10px;
 `;
+const EditButton = styled.button`
+  background-color: white;
+  color: black;
+  font-weight: 600;
+  border: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+const TextArea = styled.textarea`
+  border: 1px solid white;
+  padding: 20px;
+  border-radius: 20px;
+  font-size: 16px;
+  color: white;
+  background-color: black;
+  width: 100%;
+  resize: none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 
-export default function Profile() {
+  }
+  &:focus {
+    outline: none;
+    border-color: #1d9bf0;
+  }
+`
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+const SubmitBtn = styled.input`
+  background-color: white;
+  color: black;
+  font-weight: 600;
+  border: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+export default function Profile({ userId }: ITweet) {
   const user = auth.currentUser;
   
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [tweets, setTweets] = useState<ITweet[]>([]);
+  const [isEdit, setIsEdit] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   
+  const onClick = () => {
+    setIsEdit(true);
+  }
+
+  const onChange = (e : React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEditName(e.target.value)
+    console.log(editName)
+  }
+
+
+
   const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
    
     const { files } = e.target;
@@ -82,6 +143,50 @@ export default function Profile() {
       });
     }
   };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+    
+    console.log(user)
+    if (!user || isLoading || editName=="" || editName.length > 20)
+      return;
+
+    try {
+      setIsLoading(true);
+      /*const tweetQuery = query(
+        collection(db, "tweets"),
+        where("userId", "==", user?.uid)
+      );
+      const snapshot = await getDocs(tweetQuery);
+    const editDocName = snapshot.docs.map((doc) => {
+      const { tweet, createdAt, userId, username, photo } = doc.data();
+      return {
+        tweet,
+        createdAt,
+        userId,
+        username : editName,
+        photo,
+        id: doc.id,
+      };
+    });
+     시도중 */
+      if(editName){
+        await updateProfile(user, {
+          displayName: editName,
+          })
+       
+     //await updateDoc(tweetRef, {username:editName});
+    }
+  setIsEdit(false)
+  setEditName("");
+}catch (e) {
+  console.log(e);
+} finally {
+  
+  setIsLoading(false)
+}
+};
 
   const fetchTweets = async () => {
     const tweetQuery = query(
@@ -136,8 +241,24 @@ export default function Profile() {
         type="file"
         accept="image/*"
       />
-      <Name>{user?.displayName ?? "Anonymous"}</Name>
-      
+      {isEdit ? ( 
+        <Form onSubmit={onSubmit}>
+          <TextArea
+            defaultValue={user?.displayName}
+            onChange={onChange}
+            />
+          <SubmitBtn
+        type="submit"
+        value={isLoading ? "changing..." : "Done"}
+      />
+        </Form>
+        ) :
+          (
+          <>
+          <Name>{user?.displayName ?? "Anonymous"}</Name>
+          <EditButton onClick={onClick}>Edit</EditButton>
+          </>
+          )}
       <Tweets>
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} {...tweet} />

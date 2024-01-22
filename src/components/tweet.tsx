@@ -20,7 +20,7 @@ const Wrapper = styled.div`
 
 const Column = styled.div`
   &:last-child {
-    place-self: end;
+  place-self: end;
   }
 `;
 
