@@ -10,7 +10,6 @@ import {
   orderBy,
   query,
   where,
-  doc,
   updateDoc,
 } from "firebase/firestore";
 import { ITweet } from "../components/timeline";
@@ -99,7 +98,7 @@ const SubmitBtn = styled.input`
   border-radius: 5px;
   cursor: pointer;
 `;
-export default function Profile({ userId }: ITweet) {
+export default function Profile() {
   const user = auth.currentUser;
   
   const [avatar, setAvatar] = useState(user?.photoURL);
@@ -144,49 +143,58 @@ export default function Profile({ userId }: ITweet) {
     }
   };
 
+
+
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const user = auth.currentUser;
-    
-    console.log(user)
     if (!user || isLoading || editName=="" || editName.length > 20)
-      return;
-
+      return; 
     try {
       setIsLoading(true);
-      /*const tweetQuery = query(
-        collection(db, "tweets"),
-        where("userId", "==", user?.uid)
-      );
-      const snapshot = await getDocs(tweetQuery);
-    const editDocName = snapshot.docs.map((doc) => {
-      const { tweet, createdAt, userId, username, photo } = doc.data();
-      return {
-        tweet,
-        createdAt,
-        userId,
-        username : editName,
-        photo,
-        id: doc.id,
-      };
-    });
-     시도중 */
       if(editName){
-        await updateProfile(user, {
-          displayName: editName,
-          })
-       
-     //await updateDoc(tweetRef, {username:editName});
+        await fetch(editName);
+      
+      await updateProfile(user, {
+        displayName: editName,
+        })
+      }
+      setIsEdit(false);
+      setEditName("");
+      
+    }catch (e){
+      console.log(e);
+    } finally {
+      setIsLoading(false)
     }
-  setIsEdit(false)
-  setEditName("");
-}catch (e) {
-  console.log(e);
-} finally {
+  };
+
+
+  const fetch = async (editName) => {
+    const user = auth.currentUser;
   
-  setIsLoading(false)
-}
-};
+    if (!user || !user.uid || !editName) {
+      // Ensure user is authenticated, has a UID, and editName is defined
+      return;
+    }
+  
+    const editQuery = query(
+      collection(db, "tweets"),
+      where("userId", "==", user.uid)
+    );
+  
+    const snapshot = await getDocs(editQuery);
+  
+    snapshot.docs.forEach(async (doc) => {
+      const docRef = doc.ref;
+      
+      // Check if the document has a 'username' field before updating
+      if (doc.data().username !== undefined) {
+        await updateDoc(docRef, { username: editName });
+      }
+    });
+  };
 
   const fetchTweets = async () => {
     const tweetQuery = query(
@@ -216,6 +224,7 @@ export default function Profile({ userId }: ITweet) {
   };
   useEffect(() => {
     fetchTweets();
+    
   }, []);
   //timeline.tsx에서 사용했던 방식과 같은 방식이지만 onSnapshot 메소드로 realtime 방식은 사용하지 않는다.
 
