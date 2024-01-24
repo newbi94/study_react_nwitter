@@ -128,12 +128,6 @@ export default function Profile() {
       const file = files[0];
       
       const locationRef = ref(storage, `avatars/${user?.uid}`);
-      //이미 올린 사진이 있을 때, 다시 프로필을 누르고 사진을 선택하면 덮어쓰기가 된다.
-      //원래 user.uid뒤에 id(=doc.id)로된 이미지 파일까지를 ref로 잡던데..
-      //-> 1개의 계정당 트윗은 여러개, 각 트윗당 사진은 1개씩이기 때문에
-      //각 트윗당 (=각각의 doc이 존재,user.uid) 사진 (id(doc.id))이 필요하지만
-      //프로필은 1개의 계정당 1개라서 avatars 폴더 내부에 user.uid로 된 이미지파일을 바로 저장한다.
-      //
       const result = await uploadBytes(locationRef, file);
       const avatarUrl = await getDownloadURL(result.ref);
       setAvatar(avatarUrl);
@@ -143,9 +137,7 @@ export default function Profile() {
     }
   };
 
-
-
-
+//////////////////////////////////////////////////////////////////////////////////
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const user = auth.currentUser;
@@ -155,8 +147,7 @@ export default function Profile() {
       setIsLoading(true);
       if(editName){
         await fetch(editName);
-      
-      await updateProfile(user, {
+        await updateProfile(user, {
         displayName: editName,
         })
       }
@@ -170,12 +161,11 @@ export default function Profile() {
     }
   };
 
-
   const fetch = async (editName) => {
     const user = auth.currentUser;
   
     if (!user || !user.uid || !editName) {
-      // Ensure user is authenticated, has a UID, and editName is defined
+
       return;
     }
   
@@ -189,21 +179,17 @@ export default function Profile() {
     snapshot.docs.forEach(async (doc) => {
       const docRef = doc.ref;
       
-      // Check if the document has a 'username' field before updating
       if (doc.data().username !== undefined) {
         await updateDoc(docRef, { username: editName });
       }
     });
   };
+///////////////////////////////////////////////////////////////////
 
   const fetchTweets = async () => {
     const tweetQuery = query(
       collection(db, "tweets"),
       where("userId", "==", user?.uid),
-      //where은 필터의 역할을 하는데 firebase는 때때로 너무 flexible해서 이와 같은 필터를 사용할 때,
-      //firebase에게 이러한 필터를 사용할 것이라고 알려줘야 한다.
-      //때문에 최초 where을 이용해서 필터를 작성하고 실행했을 때, 에러코드에 나오는 링크로 들어가
-      //필터를 등록하면 사용할 수 있게된다.
       orderBy("createdAt", "desc"),
       limit(25)
     );
@@ -226,7 +212,6 @@ export default function Profile() {
     fetchTweets();
     
   }, []);
-  //timeline.tsx에서 사용했던 방식과 같은 방식이지만 onSnapshot 메소드로 realtime 방식은 사용하지 않는다.
 
   return (
     <Wrapper>
