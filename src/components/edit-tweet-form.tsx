@@ -1,5 +1,5 @@
 import { styled } from "styled-components";
-import { ITweet } from "./timeline";
+//import { ITweet } from "./timeline";
 import { auth, db, storage } from "../firebase";
 import { doc, updateDoc} from "firebase/firestore";
 import {
@@ -60,7 +60,7 @@ const Form = styled.form`
   gap: 10px;
 `;
 
-export default function EditTweetForm ({ tweet, id }: ITweet) {
+export default function EditTweetForm ({setEdit, tweet, id, photo,  }) {
 
 const [isLoading, setIsLoading] = useState(false);  
 const [editText, setEditText] = useState("");
@@ -92,9 +92,12 @@ const [editFile, setEditFile] = useState<File | null>(null);
       await updateDoc(tweetRef, {tweet: editText,});
     }
       if (editFile) {
+        
       const photoRef = ref(
         storage,`tweets/${user.uid}/${id}`)
+        if (photo) {
         await deleteObject(photoRef)
+      }
       
       const result = await uploadBytes(photoRef, editFile);
       const url = await getDownloadURL(result.ref);
@@ -103,8 +106,8 @@ const [editFile, setEditFile] = useState<File | null>(null);
     }
       setEditText("");
       setEdit(false);
-      
       setEditFile(null);
+    
     }catch (e) {
       console.log(e);
     } finally {

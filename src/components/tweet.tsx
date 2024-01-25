@@ -7,6 +7,7 @@ import {
   ref,
 } from "firebase/storage";
 import { useState } from "react";
+import EditTweetForm from "../components/edit-tweet-form"
 
 const Wrapper = styled.div`
   display: grid;
@@ -61,7 +62,10 @@ const EditButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
 `;
-
+const BtnWrapper = styled.div`
+  font-weight: 600;
+  font-size: 15px;
+`;
 
 
 export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
@@ -89,8 +93,6 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
 
   const onEdit = () => {
     setEdit(true)
-    console.log(editText)
-    console.log(editFile)
   };
 
   return (
@@ -98,13 +100,18 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
       <Column>
         <Username>{username}</Username>
         {edit ? 
-         <EditTweetForm/> : 
+         <EditTweetForm
+         setEdit={setEdit}
+         id={id}
+         photo={photo}
+         tweet={tweet}
+         /> : 
          <Payload>{tweet}</Payload>}
         {user?.uid === userId ? (
           <BtnWrapper>
-          <DeleteButton
+          <DeleteButton 
           onClick={onDelete}
-          value={isLoading ? "deleting..." : "Done"}
+          value = {isLoading ? "Deleting..." : "Deleted"}
           />
           <EditButton onClick={onEdit}>Edit</EditButton>
           </BtnWrapper>
