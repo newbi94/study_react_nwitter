@@ -65,6 +65,7 @@ const EditButton = styled.button`
 const BtnWrapper = styled.div`
   font-weight: 600;
   font-size: 15px;
+  gap: 5px;
 `;
 
 
@@ -107,12 +108,10 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
          tweet={tweet}
          /> : 
          <Payload>{tweet}</Payload>}
-        {user?.uid === userId ? (
+        {user?.uid === userId && !edit ? (
           <BtnWrapper>
-          <DeleteButton 
-          onClick={onDelete}
-          value = {isLoading ? "Deleting..." : "Deleted"}
-          />
+          <DeleteButton onClick={onDelete}>
+            {isLoading ? "Deleting" : "Delete"}</DeleteButton>
           <EditButton onClick={onEdit}>Edit</EditButton>
           </BtnWrapper>
         ) : null}

@@ -5,17 +5,17 @@ import { getDownloadURL, ref, uploadBytes,} from "firebase/storage";
 import { updateProfile } from "firebase/auth";
 import {
   collection,
-  getDocs,
+  //getDocs,
   limit,
   orderBy,
   query,
   where,
-  updateDoc,
+  //updateDoc,
   onSnapshot,
 } from "firebase/firestore";
 import { ITweet } from "../components/timeline";
 import Tweet from "../components/tweet";
-
+import EditProfileForm from "../components/edit-profile-form"
 
 const Wrapper = styled.div`
   display: flex;
@@ -65,7 +65,7 @@ const EditButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
 `;
-const TextArea = styled.textarea`
+/* const TextArea = styled.textarea`
   border: 1px solid white;
   padding: 20px;
   border-radius: 20px;
@@ -98,27 +98,16 @@ const SubmitBtn = styled.input`
   text-transform: uppercase;
   border-radius: 5px;
   cursor: pointer;
-`;
+`; */
 export default function Profile() {
   const user = auth.currentUser;
   
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [tweets, setTweets] = useState<ITweet[]>([]);
   const [isEdit, setIsEdit] = useState(false);
-  const [editName, setEditName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  //const [editName, setEditName] = useState("");
+  //const [isLoading, setIsLoading] = useState(false);
   
-  let unsubscribe: Unsubscribe | null = null;
-  
-  const onClick = () => {
-    setIsEdit(true);
-  }
-
-  const onChange = (e : React.ChangeEvent<HTMLTextAreaElement>) => {
-    setEditName(e.target.value)
-    console.log(editName)
-  }
-
   const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
    const { files } = e.target;
    if (!user) return;
@@ -133,6 +122,17 @@ export default function Profile() {
       });
     }
   };
+
+   let unsubscribe: Unsubscribe | null = null;
+
+   const onClick = () => {
+    setIsEdit(true);
+  }
+
+  /*const onChange = (e : React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEditName(e.target.value)
+    console.log(editName)
+  }
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -171,7 +171,7 @@ export default function Profile() {
       await updateDoc(docRef, { username: editName });
       });
       console.log("Username updated in Firestore:", editName);
-  };
+  };  */
   
   const fetchTweets = async () => {
     const tweetsQuery = query(
@@ -184,7 +184,7 @@ export default function Profile() {
   unsubscribe = await onSnapshot(tweetsQuery, (snapshot) => {
   const tweets = snapshot.docs.map((doc) => {
     const { tweet, createdAt, userId, username, photo } = doc.data();
-    console.log("Retrieved username from Firestore:", username);
+    console.log("username updated by onSnapshot");
     return {
       tweet,
       createdAt,
@@ -227,18 +227,10 @@ export default function Profile() {
         accept="image/*"
       />
       {isEdit ? ( 
-        <Form onSubmit={onSubmit}>
-          <TextArea
-            defaultValue={user?.displayName}
-            onChange={onChange}
-            />
-          <SubmitBtn
-        type="submit"
-        value={isLoading ? "changing..." : "Done"}
-      />
-        </Form>
-        ) :
-          (
+        <EditProfileForm
+        setIsEdit={setIsEdit}
+        />
+        ) : (
           <>
           <Name>{user?.displayName ?? "Anonymous"}</Name>
           <EditButton onClick={onClick}>Edit</EditButton>

@@ -55,9 +55,7 @@ const AttachFileInput = styled.input`
   display: none;
 `;
 const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 5px;
 `;
 
 export default function EditTweetForm ({setEdit, tweet, id, photo,  }) {
@@ -132,10 +130,9 @@ const [editFile, setEditFile] = useState<File | null>(null);
         id="editFile"
         accept="image/*"
       />
-        <SubmitBtn
-        type="submit"
-        value={isLoading ? "editing..." : "Done"}
-      />
+        <SubmitBtn type="submit">
+          {isLoading ? "Editing..." : "Done"}
+          </SubmitBtn>
         </Form>
   )
 }
